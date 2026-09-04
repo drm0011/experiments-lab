@@ -1178,3 +1178,146 @@ Choose the next question
 This repository is not about collecting technologies.
 
 It is about **becoming a stronger software engineer by understanding more of the systems on which software depends.**
+
+## Possible Experiments
+
+Each experiment should be small enough to complete within **1–2 sprints**, with approximately **0.5 day per week** available. The goal is not to fully learn a technology, but to answer a focused technical question through a small implementation and measurable investigation.
+
+### Linux & Systems
+
+* **Linux Developer Toolbox**
+
+  * Build a small CLI tool for tasks such as project information, finding errors, cleaning build files, or running benchmarks.
+  * Explore Bash, processes, environment variables, filesystems, pipes, exit codes, and permissions.
+  * **Question:** What development tasks can Linux's CLI and tooling make easier to automate?
+
+* **What Actually Happens When I Run a Program?**
+
+  * Write a tiny C++ program and investigate what happens from source code to executable to running process.
+  * Use tools such as `gcc`/`clang`, `file`, `ldd`, `objdump`, `strace`, `ps`, and `/proc`.
+  * **Question:** What happens between writing source code and the program actually executing?
+
+* **Linux Process Monitor**
+
+  * Build a simplified version of `top` or `ps` using `/proc`.
+  * Display process IDs, names, CPU usage, memory usage, process lifetime, and permissions.
+  * **Question:** How does Linux represent and manage running processes?
+
+* **Linux Debugging Investigation**
+
+  * Start with a deliberately broken C++ or Rust program containing issues such as a segmentation fault, memory leak, infinite loop, or unexpected file access.
+  * Investigate it using `gdb`, `strace`, and/or Valgrind.
+  * **Question:** How can Linux tooling help diagnose problems that are not obvious from source code?
+
+### Memory, Concurrency & Performance
+
+* **Memory Experiment**
+
+  * Compare stack and heap allocation, pointers/references, object sizes, and allocation behaviour.
+  * Optionally compare the same concept in C#, C++, and Rust.
+  * **Question:** How do different programming languages expose and manage memory?
+
+* **Multithreading Experiment**
+
+  * Implement a small computational task using 1, 2, 4, and 8 threads.
+  * Measure execution time, CPU usage, and scaling.
+  * **Question:** When does adding threads improve performance, and when does it add overhead?
+
+* **Tiny Benchmarking Tool**
+
+  * Build a CLI such as `bench ./program`.
+  * Run programs repeatedly and report minimum, maximum, average, and variation.
+  * Investigate warm-up effects, outliers, compiler optimisation, and debug vs. release builds.
+  * **Question:** How can software performance be measured reliably rather than guessed?
+
+* **Rust vs C++ vs C#**
+
+  * Implement the same small problem in all three languages, such as processing a dataset or searching a collection.
+  * Compare runtime, memory usage, binary size, development effort, and error handling.
+  * **Question:** How do language design choices affect software development and runtime behaviour?
+
+### Software → Operating System
+
+* **Tiny Shell**
+
+  * Build a minimal Bash-like shell supporting commands such as `ls`, `pwd`, and `echo`.
+  * Extend it with pipes, redirection, background processes, and signals if time allows.
+  * Explore `fork`, `exec`, processes, pipes, file descriptors, and signals.
+  * **Question:** How does a command-line shell interact with the operating system?
+
+* **Tiny HTTP Server**
+
+  * Build a minimal HTTP server in C++ or Rust.
+  * Handle requests from a browser or `curl`.
+  * Explore TCP, sockets, ports, HTTP, processes, and basic concurrency.
+  * **Question:** What happens between an HTTP request and the application receiving it?
+
+* **“Works on My Machine” Experiment**
+
+  * Run the same small application in different environments, such as the local Ubuntu environment and a Docker container.
+  * Investigate dependencies, environment variables, versions, filesystem differences, and reproducibility.
+  * **Question:** Why does software behave differently between environments, and how can this be controlled?
+
+### Programming Languages & Compilers
+
+* **C# → IL → Machine Code**
+
+  * Investigate the path from C# source code to IL, JIT compilation, and machine code.
+  * Compare the result with a small C++ or Rust program.
+  * Use tools to inspect assemblies and generated machine code.
+  * **Question:** How does a high-level language eventually become instructions executed by a CPU?
+
+* **Tiny Interpreter**
+
+  * Create a very small language supporting variables, arithmetic, and `print`.
+  * Implement tokenisation, parsing, an AST, and an interpreter.
+  * **Question:** How does a programming language turn text into executable behaviour?
+
+* **Tiny Compiler**
+
+  * Extend the interpreter or create a minimal compiler that converts a tiny language into another representation, such as bytecode or simple assembly.
+  * Keep the language intentionally small.
+  * **Question:** What are the fundamental stages involved in compiling a programming language?
+
+### Computer Architecture & RISC-V
+
+* **RISC-V Emulator**
+
+  * Implement a small software emulator supporting a limited subset of RISC-V instructions such as `ADD`, `SUB`, `LW`, `SW`, `BEQ`, and `JAL`.
+  * Model registers, memory, and the program counter.
+  * **Question:** How do machine instructions translate into operations performed by a CPU?
+
+* **Tiny CPU Simulator**
+
+  * Design a simple instruction set containing operations such as `LOAD`, `STORE`, `ADD`, `SUB`, `JUMP`, and `HALT`.
+  * Simulate registers, memory, an ALU, and instruction execution.
+  * **Question:** What are the basic components required for a CPU to execute software?
+
+* **Software → Hardware**
+
+  * Take the CPU simulator one step further and investigate how its components could be represented using digital logic.
+  * Experiment with binary addition, registers, ALU operations, and simple HDL simulation.
+  * No physical FPGA or hardware is required.
+  * **Question:** How can software instructions ultimately be represented as digital hardware?
+
+### Possible Progression
+
+A possible sequence for the semester is:
+
+1. **Linux Developer Toolbox**
+2. **What Actually Happens When I Run a Program?**
+3. **Linux Process Monitor**
+4. **Memory Experiment**
+5. **Rust vs C++ vs C#**
+6. **Tiny Benchmarking Tool**
+7. **Tiny Shell**
+8. **C# → Assembly**
+9. **RISC-V Emulator**
+10. **Tiny CPU Simulator**
+11. **Software → Hardware**
+
+The sequence is intentionally progressive:
+
+**Linux → Processes & Memory → Performance → Systems Programming → Compilers → Assembly → RISC-V → CPU Architecture → Hardware**
+
+The experiments do not all need to be completed. The next experiment should be selected based on what is currently missing from the group project, what was learned in the previous experiment, and which technical questions are most interesting to investigate next.
