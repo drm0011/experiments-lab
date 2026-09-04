@@ -1,0 +1,61 @@
+# devtool v0.1 evidence - 2026-09-04T17:52:26+02:00
+
+$ ./devtool --version
+devtool 0.1.0
+
+$ ./devtool help
+Usage: devtool <command> [arguments]
+
+Commands:
+  info     Print an overview of the current project
+  help     Show this help
+  version  Show the tool version
+
+Planned (next sprint):
+  clean    Find and remove build artifacts (dry-run by default)
+  bench    Run a command N times and report timing
+
+Options:
+  -h, --help     Show this help
+  -v, --version  Show the tool version
+
+$ ./devtool info .
+Project: experiments-lab
+Path:    /home/capn/experiments-lab
+Size:    272K
+Git:     branch=main changes=1
+Recent commits:
+  6a58c2b Update README.md
+  659c0ea Update README.md
+  1789a35 Initial commit
+Files by extension:
+  md         2
+  txt        1
+  (no ext)   1
+
+exit code: 0
+
+## Error handling checks
+
+$ ./devtool info /does/not/exist
+error: not a directory: /does/not/exist
+exit code: 1
+
+$ ./devtool bogus
+devtool: unknown command: bogus
+Run "devtool help" for usage.
+exit code: 2
+
+$ ./devtool clean
+devtool: "clean" is planned for the next sprint
+exit code: 1
+
+$ ./devtool info /tmp
+Project: tmp
+Path:    /tmp
+Size:    243M
+Git:     not a git repository
+Files by extension:
+  py         901
+  pyc        871
+  h          128

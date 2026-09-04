@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+TOOL_NAME="devtool"
+TOOL_VERSION="0.1.0"
+
+usage() {
+  cat <<'EOF'
+Usage: devtool <command> [arguments]
+
+Commands:
+  info     Print an overview of the current project
+  help     Show this help
+  version  Show the tool version
+
+Planned (next sprint):
+  clean    Find and remove build artifacts (dry-run by default)
+  bench    Run a command N times and report timing
+
+Options:
+  -h, --help     Show this help
+  -v, --version  Show the tool version
+EOF
+}
+
+cmd_info() {
+  local dir="${1:-.}"
+
+  if [[ ! -d "$dir" ]]; then
+    printf 'error: not a directory: %s\n' "$dir" >&2
+    return 1
+  fi
+
+  local name path
+  name="$(basename "$(cd "$dir" && pwd)")"
+  path="$(cd "$dir" && pwd)"
+
+  printf 'Project: %s\n' "$name"
+  printf 'Path:    %s\n' "$path"
+  printf 'Size:    %s\n' "$(du -sh "$dir" 2>/dev/null | cut -f1)"
+
+  if git -C "$dir" rev-parse --git-dir >/dev/null 2>&1; then
+    local branch changes
+    branch="$(git -C "$dir" branch --show-current)"
+    changes="$(git -C "$dir" status --porcelain | wc -l)"
+
+    printf 'Git:     branch=%s changes=%s\n' "${branch:-detached}" "$changes"
+    printf 'Recent commits:\n'
+    git -C "$dir" log --oneline -5 | sed 's/^/  /'
+  else
+    printf 'Git:     not a git repository\n'
+  fi
+
+  printf 'Files by extension:\n'
+  find "$dir" -type f -not -path '*/.git/*' 2>/dev/null \
+    | sed -n 's/.*\.\([^./]*\)$/\1/p' \
+    | sort | uniq -c | sort -rn \
+    | awk '{ printf "  %-10s %s\n", $2, $1 }'
+
+  local noext
+  noext="$(find "$dir" -type f -not -path '*/.git/*' 2>/dev/null \
+    | sed -n '/\.[^./]*$/!p' | wc -l)"
+  if (( noext > 0 )); then
+    printf '  %-10s %s\n' '(no ext)' "$noext"
+  fi
+}
+
+main() {
+  local cmd="${1:-}"
+
+  case "$cmd" in
+    -h|--help|help|"")
+      usage
+      ;;
+    -v|--version|version)
+      printf '%s %s\n' "$TOOL_NAME" "$TOOL_VERSION"
+      ;;
+    info)
+      cmd_info "${2:-.}"
+      ;;
+    clean|bench)
+      printf '%s: "%s" is planned for the next sprint\n' "$TOOL_NAME" "$cmd" >&2
+      return 1
+      ;;
+    *)
+      printf '%s: unknown command: %s\n' "$TOOL_NAME" "$cmd" >&2
+      printf 'Run "devtool help" for usage.\n' >&2
+      return 2
+      ;;
+  esac
+}
+
+main "$@"
