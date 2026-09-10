@@ -49,36 +49,21 @@ The group project is my main project and receives approximately **4.5 days per w
 
 This repository represents my remaining personal development time, approximately **0.5 day per week**.
 
+**Personal focus for this semester:** While the group project covers CI/CD at the pipeline-design level, my personal experiments will investigate the **technical foundations underneath CI/CD**: what a runner actually executes, how YAML maps to commands, how coverage instrumentation alters binaries, and how changed-file detection computes its result. The goal is not to build another pipeline, but to understand the machinery that makes the group project's pipeline possible.
+
 ---
 
 # 2. Why This Repository Exists
 
-The goal is **not to duplicate the group project**.
+The group project already gives me significant experience with **using** CI/CD: writing GitLab pipeline jobs, configuring test selection, and integrating coverage data. My personal experiments should therefore investigate the layers **beneath** that usage:
 
-The group project already gives me significant experience with:
+1. What does the GitLab Runner process actually do when it executes a job?
+2. How is a `.gitlab-ci.yml` file parsed and translated into executable commands?
+3. How does Bullseye instrumentation modify a binary, and what is the runtime cost?
+4. How does Git compute a changed-file list, and what edge cases can break it?
+5. How can test-selection logic be made deterministic, traceable, and safe to fail?
 
-* CI/CD
-* GitLab
-* automated testing
-* test automation
-* software quality
-* applied research
-* software architecture
-* reliability
-* maintainability
-* development process improvement
-* working with a real stakeholder
-
-My personal experiments should therefore primarily investigate areas that are either:
-
-1. not strongly represented in the group project,
-2. difficult to explore deeply within the group project,
-3. useful for my long-term software engineering development, or
-4. interesting enough to motivate deeper independent learning.
-
-The experiments should **supplement the group project rather than compete with it**.
-
-For example, if the group project teaches me how to create a maintainable GitLab pipeline, my personal work might investigate Linux processes, shell scripting, system performance, Rust, memory management, or how software actually interacts with an operating system.
+These questions are not duplicating the group project — they are investigating the **technical substrate** the group project depends on. They also serve the broader theme of this repository: understanding software more deeply by exploring the layers underneath it.
 
 ---
 
@@ -146,6 +131,8 @@ Semiconductors
 This is a direction, not a strict curriculum.
 
 The actual experiments should be selected based on what I need to learn at the time.
+
+**This semester's experiments will apply this direction to CI/CD internals as a case study.** In future semesters, I will broaden to other areas such as systems programming, performance engineering, and computer architecture.
 
 ---
 
@@ -343,33 +330,41 @@ This is particularly relevant to experiments involving:
 
 # 9. Software Delivery & Operations
 
-Linux and software tooling should help strengthen areas such as:
+My group project already provides significant CI/CD experience at the pipeline-design level. Therefore, my personal work should investigate the **technical foundations underneath CI/CD**, rather than recreate another pipeline. Potential areas:
 
-* automation
-* scripting
-* reproducible environments
-* deployment
-* process management
-* infrastructure
-* developer tooling
-* command-line workflows
-* monitoring
-* troubleshooting
+* What the GitLab Runner actually does (process model, job isolation, artifact handling)
+* YAML parsing and command generation
+* Coverage instrumentation at the binary level (Bullseye and alternatives)
+* `git diff` internals and changed-file detection edge cases
+* Test-selection algorithms and fallback-rule design
+* Caching, artifacts, and reproducibility in CI environments
+* Shell automation and Linux processes as they relate to CI execution
+* Resource monitoring and debugging of CI jobs
 
-My group project already provides significant CI/CD experience.
+---
 
-Therefore, my personal work should ideally explore the **technical foundations underneath development and operations**, rather than simply recreate another CI/CD project.
+# CI/CD Internals — Guiding Questions
 
-Potential examples:
+These are not mandatory experiments. They are questions I will return to when choosing what to investigate next.
 
-* shell automation
-* Linux processes
-* system services
-* environment configuration
-* containers
-* resource monitoring
-* reproducible development environments
-* debugging production-like problems
+**Runner and execution:**
+- What process does GitLab Runner spawn for a job, and how does it differ between shell, Docker, and Kubernetes executors?
+- How does a job script become a sequence of shell invocations?
+- What happens to environment variables, working directory, and filesystem state between jobs?
+
+**Coverage and instrumentation:**
+- How does Bullseye coverage instrumentation modify a compiled binary?
+- What is the runtime and memory overhead of instrumentation?
+- How is per-test coverage data extracted, and what are its limitations?
+
+**Change detection:**
+- How does `git diff --name-only` actually compute its result?
+- What edge cases can cause it to miss or over-report changes (renames, submodules, merge commits)?
+
+**Test selection and fallback:**
+- How can selection logic be made deterministic and traceable?
+- What is the correct fallback behavior when coverage data is incomplete or stale?
+- How can I measure whether a selective run is safe?
 
 ---
 
