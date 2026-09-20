@@ -383,14 +383,14 @@ A small microservices system, intentionally kept small (lives in `projects/micro
 * `orders` service — ASP.NET Core (C#) minimal API
 * `frontend` — React app that calls both services
 * Docker Compose to run everything locally
-* GitLab CI to build, test, and later select impacted tests
+* GitHub Actions CI to build, test, and later select impacted tests
 
 ## How it serves the experiments
 
 Each CI/CD-internals question is investigated against this project:
 
 * Runner behavior is observed while the project's pipeline executes
-* YAML-to-command mapping is studied in the project's `.gitlab-ci.yml`
+* YAML-to-command mapping is studied in the project's GitHub Actions workflow
 * Coverage instrumentation is measured on the project's services
 * Changed-file detection is tested against the project's repository history
 * Fallback rules are designed for the project's test suite

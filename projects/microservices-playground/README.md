@@ -11,7 +11,7 @@ microservices-playground/
 │   └── orders/           ASP.NET Core minimal API (C#)
 ├── frontend/             React (Vite + TypeScript)
 ├── docker-compose.yml    runs all three locally
-└── .gitlab-ci.yml        CI placeholder (exercised on a GitLab instance)
+└── .github/workflows/    CI (GitHub Actions)
 ```
 
 ## Services
@@ -40,11 +40,11 @@ cd services/orders  && dotnet run      # needs .NET 8 SDK
 cd frontend && npm install && npm run dev
 ```
 
-The .NET 8 SDK is currently **not installed** on this machine — install it before running the services locally, or use Docker.
+The .NET 10 SDK is currently **not installed** on this machine — install it before running the services locally, or use Docker.
 
 ## CI
 
-The `.gitlab-ci.yml` is an initial placeholder with a build stage per service. This repository is hosted on GitHub, so CI experiments require pushing or mirroring this project to a GitLab instance (e.g. the school GitLab).
+The GitHub Actions workflow (`.github/workflows/ci.yml`) is an initial placeholder with one build job per component. The concepts learned here transfer directly to the GitLab CI/CD pipeline in the group project.
 
 ## Intended experiments
 
