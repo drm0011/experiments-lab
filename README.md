@@ -49,7 +49,7 @@ The group project is my main project and receives approximately **4.5 days per w
 
 This repository represents my remaining personal development time, approximately **0.5 day per week**.
 
-**Personal focus for this semester:** While the group project covers CI/CD at the pipeline-design level, my personal experiments will investigate the **technical foundations underneath CI/CD**: what a runner actually executes, how YAML maps to commands, how coverage instrumentation alters binaries, and how changed-file detection computes its result. The goal is not to build another pipeline, but to understand the machinery that makes the group project's pipeline possible.
+**Personal focus for this semester:** My first idea was to investigate "CI/CD internals" in the abstract, but feedback showed this is too general. Instead, I will build and maintain a small **placeholder microservices project** (C# services, React frontend) and use it as the concrete vehicle for diving deeper into CI/CD: what a runner actually executes, how YAML maps to commands, how coverage instrumentation alters binaries, and how changed-file detection computes its result. The placeholder project also gives me flexibility to experiment with other areas such as software architecture or frontend development when useful. I will use what I learn here to work toward my goals within the HBO-i framework.
 
 ---
 
@@ -64,6 +64,8 @@ The group project already gives me significant experience with **using** CI/CD: 
 5. How can test-selection logic be made deterministic, traceable, and safe to fail?
 
 These questions are not duplicating the group project — they are investigating the **technical substrate** the group project depends on. They also serve the broader theme of this repository: understanding software more deeply by exploring the layers underneath it.
+
+These questions will not be investigated in the abstract: they are exercised against a concrete **placeholder microservices project**, which also gives room to experiment with architecture or frontend development when that becomes more useful.
 
 ---
 
@@ -132,7 +134,7 @@ This is a direction, not a strict curriculum.
 
 The actual experiments should be selected based on what I need to learn at the time.
 
-**This semester's experiments will apply this direction to CI/CD internals as a case study.** In future semesters, I will broaden to other areas such as systems programming, performance engineering, and computer architecture.
+**This semester's experiments will apply this direction through a placeholder microservices project, using CI/CD as the primary case study.** The project may later serve as a vehicle for architecture or frontend experiments. In future semesters, I will broaden to other areas such as systems programming, performance engineering, and computer architecture.
 
 ---
 
@@ -340,12 +342,13 @@ My group project already provides significant CI/CD experience at the pipeline-d
 * Caching, artifacts, and reproducibility in CI environments
 * Shell automation and Linux processes as they relate to CI execution
 * Resource monitoring and debugging of CI jobs
+* A placeholder microservices project as the concrete vehicle for these investigations
 
 ---
 
 # CI/CD Internals — Guiding Questions
 
-These are not mandatory experiments. They are questions I will return to when choosing what to investigate next.
+These are not mandatory experiments. They are questions I will return to when choosing what to investigate next. They are anchored to the placeholder microservices project rather than explored in the abstract.
 
 **Runner and execution:**
 - What process does GitLab Runner spawn for a job, and how does it differ between shell, Docker, and Kubernetes executors?
@@ -365,6 +368,49 @@ These are not mandatory experiments. They are questions I will return to when ch
 - How can selection logic be made deterministic and traceable?
 - What is the correct fallback behavior when coverage data is incomplete or stale?
 - How can I measure whether a selective run is safe?
+
+---
+
+# Placeholder Project — Microservices Playground
+
+Feedback on my first plan pointed out that investigating "CI/CD internals" in general is too vague. A concrete project makes each question measurable and keeps experiments grounded.
+
+## What
+
+A small microservices system, intentionally kept small (lives in `projects/microservices-playground/`):
+
+* `catalog` service — ASP.NET Core (C#) minimal API
+* `orders` service — ASP.NET Core (C#) minimal API
+* `frontend` — React app that calls both services
+* Docker Compose to run everything locally
+* GitLab CI to build, test, and later select impacted tests
+
+## How it serves the experiments
+
+Each CI/CD-internals question is investigated against this project:
+
+* Runner behavior is observed while the project's pipeline executes
+* YAML-to-command mapping is studied in the project's `.gitlab-ci.yml`
+* Coverage instrumentation is measured on the project's services
+* Changed-file detection is tested against the project's repository history
+* Fallback rules are designed for the project's test suite
+
+## Flexibility
+
+The project can also absorb experiments in other areas when useful:
+
+* software architecture (service boundaries, communication patterns)
+* frontend development (React build pipeline, testing)
+
+## HBO-i
+
+I will use what I learn here to work toward my goals within the HBO-i framework. Each experiment's README will note which HBO-i competencies it exercises.
+
+## Scope guardrails
+
+* In-memory data only at first — no databases
+* One new capability at a time, matching the 0.5 day per week budget
+* The project is a vehicle for learning, not a product
 
 ---
 
@@ -1177,6 +1223,8 @@ It is about **becoming a stronger software engineer by understanding more of the
 ## Possible Experiments
 
 Each experiment should be small enough to complete within **1–2 sprints**, with approximately **0.5 day per week** available. The goal is not to fully learn a technology, but to answer a focused technical question through a small implementation and measurable investigation.
+
+This semester, experiments will preferably be exercised against the **placeholder microservices project** (C# services, React frontend), especially those related to CI/CD.
 
 ### Linux & Systems
 
