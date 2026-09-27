@@ -37,7 +37,6 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
-          cache: true
       - run: dotnet build projects/microservices-playground/services/catalog/Catalog.Api.csproj
 
   build-inventory:
@@ -47,7 +46,6 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
-          cache: true
       - run: dotnet build projects/microservices-playground/services/inventory/Inventory.Api.csproj
 
   build-orders:
@@ -57,7 +55,6 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
-          cache: true
       - run: dotnet build projects/microservices-playground/services/orders/Orders.Api.csproj
 
   build-frontend:

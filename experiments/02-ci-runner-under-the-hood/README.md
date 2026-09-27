@@ -17,7 +17,7 @@ Each job runs in a fresh, isolated environment (a disposable VM with a fixed set
 ## Experiment
 
 1. Extend the playground CI with a `runner-info` job that dumps `uname`, OS release, PATH, available tools, and all environment variables, uploaded as a build artifact.
-2. Enable dependency caching for the .NET and frontend jobs (NuGet global packages, npm cache).
+2. Enable dependency caching for the frontend job (npm cache via package-lock.json). NuGet caching for the .NET jobs requires a `packages.lock.json` and is deferred to a follow-up experiment.
 3. Push and observe the run in the Actions tab: job ordering, parallelism, logs.
 4. Download the `runner-info` artifact and compare the runner environment with my local Ubuntu machine.
 5. Trigger a second run and compare job timings with and without warm caches.
