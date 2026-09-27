@@ -31,7 +31,20 @@ Each job runs in a fresh, isolated environment (a disposable VM with a fixed set
 
 ## Results
 
-*(to be filled in after the run - evidence in `results/`)*
+Run #2 (SHA `0bfc1ad`), all 5 jobs green in ~23s total, jobs running in parallel.
+
+The `runner-info` artifact (`results/runner-info.txt`) shows the runner is:
+
+- **Ubuntu 24.04.5 LTS** on an **Azure VM** (kernel `6.17.0-1022-azure`), image `20260920.314.1` — while my local machine is Ubuntu 26.04. My dev environment is *newer* than the CI environment.
+- Runs as user `runner` (`HOME=/home/runner`), workspace `/home/runner/work/experiments-lab/experiments-lab` (fresh checkout per job).
+- Has a huge preinstalled toolchain: Android SDK, 3 Go versions, 5 JDKs, ghcup, vcpkg, PowerShell, browser webdrivers — the runner image is a general-purpose machine, not a minimal one.
+- Already had .NET SDK 10.0.401 preinstalled (visible in `setup-dotnet` logs) — version drift vs my local 10.0.112.
+- Exposes GitHub machinery as env vars and *file paths*: `GITHUB_ENV`, `GITHUB_OUTPUT`, `GITHUB_STEP_SUMMARY` point to temp files — the runner communicates with steps through files, not just exit codes.
+
+Also learned by fixing two failures along the way:
+
+1. Workflows must live at the **repo root** `.github/workflows/` — a workflow inside a subdirectory is silently ignored (0 runs before the move).
+2. `setup-dotnet` with `cache: true` fails without a `packages.lock.json` — NuGet caching needs lock files, npm caching only needs `package-lock.json`.
 
 ## Analysis
 

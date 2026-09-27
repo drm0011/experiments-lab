@@ -1,0 +1,13 @@
+=== uname ===
+Linux capn-ThinkPad-E15-Gen-2 7.0.0-31-generic #31-Ubuntu SMP PREEMPT_DYNAMIC Sat Aug  1 04:26:38 UTC 2026 x86_64 GNU/Linux
+=== os-release ===
+PRETTY_NAME="Ubuntu 26.04 LTS"
+NAME="Ubuntu"
+=== PATH ===
+/home/capn/.opencode/bin:/home/capn/.config/Code/User/globalStorage/github.copilot-chat/debugCommand:/home/capn/.config/Code/User/globalStorage/github.copilot-chat/copilotCli:/home/capn/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/capn/.local/bin:/home/capn/.local/bin
+=== available tools ===
+dotnet: /usr/bin/dotnet
+node: /usr/bin/node
+npm: /usr/bin/npm
+docker: /usr/bin/docker
+git: /usr/bin/git
