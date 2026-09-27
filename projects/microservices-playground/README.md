@@ -21,7 +21,7 @@ microservices-playground/
 │   └── orders/           ASP.NET Core minimal API (C#)
 ├── frontend/             React (Vite + TypeScript)
 ├── docker-compose.yml    runs everything locally
-└── .github/workflows/    CI (GitHub Actions)
+└── (CI lives at repo root: .github/workflows/ci.yml)
 ```
 
 ## Services

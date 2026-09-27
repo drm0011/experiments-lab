@@ -38,7 +38,7 @@ jobs:
         with:
           dotnet-version: '10.0.x'
           cache: true
-      - run: dotnet build services/catalog/Catalog.Api.csproj
+      - run: dotnet build projects/microservices-playground/services/catalog/Catalog.Api.csproj
 
   build-inventory:
     runs-on: ubuntu-latest
@@ -48,7 +48,7 @@ jobs:
         with:
           dotnet-version: '10.0.x'
           cache: true
-      - run: dotnet build services/inventory/Inventory.Api.csproj
+      - run: dotnet build projects/microservices-playground/services/inventory/Inventory.Api.csproj
 
   build-orders:
     runs-on: ubuntu-latest
@@ -58,7 +58,7 @@ jobs:
         with:
           dotnet-version: '10.0.x'
           cache: true
-      - run: dotnet build services/orders/Orders.Api.csproj
+      - run: dotnet build projects/microservices-playground/services/orders/Orders.Api.csproj
 
   build-frontend:
     runs-on: ubuntu-latest
@@ -68,8 +68,8 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: frontend/package-lock.json
+          cache-dependency-path: projects/microservices-playground/frontend/package-lock.json
       - run: npm install
-        working-directory: frontend
+        working-directory: projects/microservices-playground/frontend
       - run: npm run build
-        working-directory: frontend
+        working-directory: projects/microservices-playground/frontend
