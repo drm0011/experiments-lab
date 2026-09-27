@@ -23,6 +23,15 @@ jobs:
           dotnet-version: '10.0.x'
       - run: dotnet build services/orders/Orders.Api.csproj
 
+  build-inventory:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - run: dotnet build services/inventory/Inventory.Api.csproj
+
   build-frontend:
     runs-on: ubuntu-latest
     steps:
