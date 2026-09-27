@@ -12,70 +12,132 @@ function App() {
   const [items, setItems] = useState<Item[]>([])
   const [stock, setStock] = useState<StockEntry[]>([])
   const [orders, setOrders] = useState<Order[]>([])
-  const [itemId, setItemId] = useState(1)
-  const [quantity, setQuantity] = useState(1)
-  const [message, setMessage] = useState('')
+  const [toast, setToast] = useState<{ kind: 'ok' | 'error'; text: string } | null>(null)
+  const [loading, setLoading] = useState(true)
 
-  const refresh = () => {
-    fetch(`${CATALOG_URL}/items`)
-      .then(r => r.json())
-      .then(setItems)
-      .catch(() => setItems([]))
-    fetch(`${INVENTORY_URL}/stock`)
-      .then(r => r.json())
-      .then(setStock)
-      .catch(() => setStock([]))
-    fetch(`${ORDERS_URL}/orders`)
-      .then(r => r.json())
-      .then(setOrders)
-      .catch(() => setOrders([]))
+  const load = async () => {
+    const [i, s, o] = await Promise.all([
+      fetch(`${CATALOG_URL}/items`).then(r => r.json()).catch(() => []),
+      fetch(`${INVENTORY_URL}/stock`).then(r => r.json()).catch(() => []),
+      fetch(`${ORDERS_URL}/orders`).then(r => r.json()).catch(() => []),
+    ])
+    setItems(i)
+    setStock(s)
+    setOrders(o)
+    setLoading(false)
   }
 
-  useEffect(refresh, [])
+  useEffect(() => {
+    load()
+  }, [])
 
-  const placeOrder = async () => {
+  const showToast = (kind: 'ok' | 'error', text: string) => {
+    setToast({ kind, text })
+    setTimeout(() => setToast(null), 3000)
+  }
+
+  const placeOrder = async (itemId: number, quantity: number) => {
     const res = await fetch(`${ORDERS_URL}/orders`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ itemId, quantity })
+      body: JSON.stringify({ itemId, quantity }),
     })
-    setMessage(res.ok ? 'Order placed' : `Order failed (${res.status})`)
-    refresh()
+    if (res.ok) {
+      showToast('ok', 'Order placed')
+    } else {
+      const body = await res.json().catch(() => ({}))
+      showToast('error', `Order failed (${res.status})${body.error ? `: ${body.error}` : ''}`)
+    }
+    load()
   }
 
-  const stockFor = (id: number) => stock.find(s => s.itemId === id)?.quantity ?? '?'
+  const stockFor = (id: number) => stock.find(s => s.itemId === id)?.quantity
+  const itemName = (id: number) => items.find(i => i.id === id)?.name ?? `item ${id}`
+
+  if (loading) {
+    return <div className="container">Loading shop…</div>
+  }
 
   return (
-    <main>
-      <h1>Microservices Playground — Tiny Shop</h1>
+    <div className="container">
+      <header className="header">
+        <h1>Microservices Shop</h1>
+        <p>Catalog · Inventory · Orders — one service each</p>
+      </header>
+
       <section>
-        <h2>Catalog</h2>
-        <ul>
-          {items.map(i => (
-            <li key={i.id}>{i.name} - {i.price} (stock: {stockFor(i.id)})</li>
+        <h2 className="section-title">Products</h2>
+        <div className="grid">
+          {items.map(item => (
+            <ProductCard
+              key={item.id}
+              item={item}
+              stock={stockFor(item.id)}
+              onOrder={placeOrder}
+            />
           ))}
-        </ul>
+        </div>
       </section>
+
       <section>
-        <h2>Place order</h2>
-        <select value={itemId} onChange={e => setItemId(Number(e.target.value))}>
-          {items.map(i => (
-            <option key={i.id} value={i.id}>{i.name}</option>
-          ))}
-        </select>
-        <input type="number" min={1} value={quantity} onChange={e => setQuantity(Number(e.target.value))} />
-        <button onClick={placeOrder}>Order</button>
-        <p>{message}</p>
+        <h2 className="section-title">Orders</h2>
+        {orders.length === 0 ? (
+          <p className="muted">No orders yet — place one above.</p>
+        ) : (
+          <ul className="order-list">
+            {orders.map(o => (
+              <li key={o.id}>
+                <span className="order-id">#{o.id}</span>
+                <span>{itemName(o.itemId)}</span>
+                <span className="muted">×{o.quantity}</span>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
-      <section>
-        <h2>Orders</h2>
-        <ul>
-          {orders.map(o => (
-            <li key={o.id}>#{o.id}: item {o.itemId} x{o.quantity}</li>
-          ))}
-        </ul>
-      </section>
-    </main>
+
+      {toast && <div className={`toast toast-${toast.kind}`}>{toast.text}</div>}
+    </div>
+  )
+}
+
+function ProductCard({ item, stock, onOrder }: {
+  item: Item
+  stock: number | undefined
+  onOrder: (itemId: number, quantity: number) => void
+}) {
+  const [quantity, setQuantity] = useState(1)
+
+  const badge = stock === undefined
+    ? <span className="badge badge-unknown">stock unknown</span>
+    : stock === 0
+      ? <span className="badge badge-out">out of stock</span>
+      : stock < 5
+        ? <span className="badge badge-low">only {stock} left</span>
+        : <span className="badge badge-in">in stock ({stock})</span>
+
+  return (
+    <article className="card">
+      <div className="card-head">
+        <h3>{item.name}</h3>
+        <div className="price">€{item.price.toFixed(2)}</div>
+      </div>
+      {badge}
+      <div className="card-actions">
+        <input
+          type="number"
+          min={1}
+          value={quantity}
+          onChange={e => setQuantity(Math.max(1, Number(e.target.value)))}
+        />
+        <button
+          disabled={stock === 0 || stock === undefined}
+          onClick={() => onOrder(item.id, quantity)}
+        >
+          Order
+        </button>
+      </div>
+    </article>
   )
 }
 
