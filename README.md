@@ -49,7 +49,7 @@ The group project is my main project and receives approximately **4.5 days per w
 
 This repository represents my remaining personal development time, approximately **0.5 day per week**.
 
-**Personal focus for this semester:** My first idea was to investigate "CI/CD internals" in the abstract, but feedback showed this is too general. Instead, I will build and maintain a small **placeholder microservices project** (C# services, React frontend) and use it as the concrete vehicle for diving deeper into CI/CD: what a runner actually executes, how YAML maps to commands, how coverage instrumentation alters binaries, and how changed-file detection computes its result. The placeholder project also gives me flexibility to experiment with other areas such as software architecture or frontend development when useful. I will use what I learn here to work toward my goals within the HBO-i framework.
+**Personal focus for this semester:** My first idea was to investigate "CI/CD internals" in the abstract, but feedback showed this is too general. Instead, I will build and maintain a small **placeholder microservices project** (C# services, React frontend) and use it as the concrete vehicle for diving deeper into CI/CD: what a runner actually executes, how YAML maps to commands, how coverage instrumentation alters binaries, and how changed-file detection computes its result. **The current priority is CI/CD in a microservices architecture.** The other experiment tracks (Linux toolbox, frontend, architecture) are parked for now and will be picked up only when they serve the CI/CD direction. I will use what I learn here to work toward my goals within the HBO-i framework.
 
 ---
 
@@ -1224,7 +1224,7 @@ It is about **becoming a stronger software engineer by understanding more of the
 
 Each experiment should be small enough to complete within **1–2 sprints**, with approximately **0.5 day per week** available. The goal is not to fully learn a technology, but to answer a focused technical question through a small implementation and measurable investigation.
 
-This semester, experiments will preferably be exercised against the **placeholder microservices project** (C# services, React frontend), especially those related to CI/CD.
+This semester, experiments will be exercised against the **placeholder microservices project** (C# services, React frontend). **Current priority: CI/CD in a microservices architecture.** Experiments outside that track are parked until they serve the CI/CD direction.
 
 ### Linux & Systems
 

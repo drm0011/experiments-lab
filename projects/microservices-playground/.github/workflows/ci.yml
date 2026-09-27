@@ -5,6 +5,31 @@ on:
   pull_request:
 
 jobs:
+  runner-info:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Capture runner environment
+        run: |
+          {
+            echo "=== uname ==="
+            uname -a
+            echo "=== os-release ==="
+            cat /etc/os-release
+            echo "=== PATH ==="
+            echo "$PATH"
+            echo "=== available tools ==="
+            for t in dotnet node npm docker git; do
+              printf "%s: " "$t"
+              command -v "$t" || echo "not found"
+            done
+            echo "=== env ==="
+            env | sort
+          } > runner-info.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: runner-info
+          path: runner-info.txt
+
   build-catalog:
     runs-on: ubuntu-latest
     steps:
@@ -12,16 +37,8 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
+          cache: true
       - run: dotnet build services/catalog/Catalog.Api.csproj
-
-  build-orders:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '10.0.x'
-      - run: dotnet build services/orders/Orders.Api.csproj
 
   build-inventory:
     runs-on: ubuntu-latest
@@ -30,7 +47,18 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
+          cache: true
       - run: dotnet build services/inventory/Inventory.Api.csproj
+
+  build-orders:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+          cache: true
+      - run: dotnet build services/orders/Orders.Api.csproj
 
   build-frontend:
     runs-on: ubuntu-latest
@@ -39,6 +67,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
       - run: npm install
         working-directory: frontend
       - run: npm run build
