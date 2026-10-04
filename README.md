@@ -18,7 +18,7 @@ My personal track (approximately 0.5 day per week) complements the group project
 
 ## Research Question
 
-> **How do I design, secure, and operate a CI/CD pipeline for a microservices application — covering DevOps and DevSecOps practice — so that the pipeline is fast, reliable, and safe to trust?**
+> **How  is a CI/CD pipeline for a microservices application — covering DevSecOps practice designed — so that the pipeline is fast, reliable, and safe to trust?**
 
 ### Sub-questions
 
