@@ -22,8 +22,8 @@ My personal track (approximately 0.5 day per week) complements the group project
 
 ### Sub-questions
 
-* **SQ1 — Pipeline design (DevOps):** How should CI/CD be structured for a multi-service system — per-service builds, service dependencies, container images, and delivery steps — so changes are validated quickly without coupling the services back together?
-* **SQ2 — Security (DevSecOps):** Which security practices should a microservices CI/CD pipeline include — dependency and image scanning, secret handling, least-privilege configuration — and how do they integrate without blocking development?
+* **SQ1 — Pipeline design:** How should CI/CD be structured for a multi-service system — per-service builds, service dependencies, container images, and delivery steps — so changes are validated quickly without coupling the services back together?
+* **SQ2 — Security:** Which security practices should a microservices CI/CD pipeline include — dependency and image scanning, secret handling, least-privilege configuration — and how do they integrate without blocking development?
 * **SQ3 — Trustworthiness (reliability):** How can the pipeline be trusted in practice — reproducible environments, caching, selective runs with safe fallbacks — and how do I measure that trust instead of assuming it?
 
 ## The Microservices Project
