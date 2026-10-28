@@ -1,0 +1,29 @@
+name: frontend
+
+on:
+  push:
+    paths:
+      - 'projects/microservices-playground/frontend/**'
+      - '.github/workflows/frontend.yml'
+  pull_request:
+    paths:
+      - 'projects/microservices-playground/frontend/**'
+      - '.github/workflows/frontend.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: projects/microservices-playground/frontend/package-lock.json
+      - run: npm install
+        working-directory: projects/microservices-playground/frontend
+      - run: npm run build
+        working-directory: projects/microservices-playground/frontend
+      - name: Build container image
+        working-directory: projects/microservices-playground/frontend
+        run: docker build -t playground-frontend:ci .

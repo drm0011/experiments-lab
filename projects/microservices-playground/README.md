@@ -61,7 +61,13 @@ Requires the .NET 10 SDK and Node 22.
 
 ## CI
 
-The GitHub Actions workflow (`.github/workflows/ci.yml`) has one build job per component. The concepts learned here transfer directly to the GitLab CI/CD pipeline in the group project.
+One pipeline per service, defined at the repository root in `.github/workflows/` (`catalog.yml`, `inventory.yml`, `orders.yml`, `frontend.yml`). Each pipeline:
+
+- triggers only when that service's files change (path filters)
+- builds the service (`dotnet build` / `npm run build`)
+- builds the container image (`docker build`)
+
+Kubernetes manifests live in the root-level `k8s/` directory (groundwork — cluster and image publishing come later). The concepts learned here transfer directly to the GitLab CI/CD pipeline in the group project.
 
 ## Intended experiments
 

@@ -1,0 +1,24 @@
+name: catalog
+
+on:
+  push:
+    paths:
+      - 'projects/microservices-playground/services/catalog/**'
+      - '.github/workflows/catalog.yml'
+  pull_request:
+    paths:
+      - 'projects/microservices-playground/services/catalog/**'
+      - '.github/workflows/catalog.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - run: dotnet build projects/microservices-playground/services/catalog/Catalog.Api.csproj
+      - name: Build container image
+        working-directory: projects/microservices-playground
+        run: docker build -f services/catalog/Dockerfile -t playground-catalog:ci .

@@ -1,0 +1,24 @@
+name: orders
+
+on:
+  push:
+    paths:
+      - 'projects/microservices-playground/services/orders/**'
+      - '.github/workflows/orders.yml'
+  pull_request:
+    paths:
+      - 'projects/microservices-playground/services/orders/**'
+      - '.github/workflows/orders.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - run: dotnet build projects/microservices-playground/services/orders/Orders.Api.csproj
+      - name: Build container image
+        working-directory: projects/microservices-playground
+        run: docker build -f services/orders/Dockerfile -t playground-orders:ci .

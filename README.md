@@ -40,7 +40,8 @@ My personal track (approximately 0.5 day per week) complements the group project
 * Three ASP.NET Core minimal APIs (.NET 10) plus one React frontend, each with its own Dockerfile
 * One real cross-service dependency: `orders` checks `inventory` stock over HTTP before accepting an order — `409` when out of stock, `503` when inventory is down
 * In-memory data only; deliberately no gateway, messaging, auth, or database yet — these gaps are future experiment subjects
-* Docker Compose runs everything locally; GitHub Actions CI (`.github/workflows/ci.yml`) builds each component
+* Docker Compose runs everything locally; GitHub Actions has **one pipeline per service** (`.github/workflows/*.yml`) with path filters, each building code + container image
+* Initial Kubernetes manifests in `k8s/` (groundwork — cluster and image publishing come later)
 
 ## Learning Outcomes
 
@@ -67,10 +68,9 @@ The experiments support the school learning outcomes through the HBO-i framework
 
 ## Next Experiment Candidates
 
-* NuGet lock files and dependency caching
-* Changed-file detection and selective per-service builds
+* Publishing container images to GHCR with proper versioning
 * Tests for the services, then selective test runs with fallback rules
-* Container image publishing (GHCR) and versioning
+* Running the shop on Kubernetes (`kind` cluster + `kubectl apply -f k8s/`)
 * Dependency and image vulnerability scanning
 * Secrets handling and least-privilege CI configuration
 

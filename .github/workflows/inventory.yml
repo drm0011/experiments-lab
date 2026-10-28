@@ -1,0 +1,24 @@
+name: inventory
+
+on:
+  push:
+    paths:
+      - 'projects/microservices-playground/services/inventory/**'
+      - '.github/workflows/inventory.yml'
+  pull_request:
+    paths:
+      - 'projects/microservices-playground/services/inventory/**'
+      - '.github/workflows/inventory.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - run: dotnet build projects/microservices-playground/services/inventory/Inventory.Api.csproj
+      - name: Build container image
+        working-directory: projects/microservices-playground
+        run: docker build -f services/inventory/Dockerfile -t playground-inventory:ci .
