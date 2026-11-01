@@ -27,3 +27,11 @@ jobs:
       - name: Build container image
         working-directory: projects/microservices-playground/frontend
         run: docker build -t playground-frontend:ci .
+      - name: Scan image with Trivy
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: image
+          image-ref: playground-frontend:ci
+          severity: HIGH,CRITICAL
+          exit-code: 1
+          trivyignores: .trivyignore

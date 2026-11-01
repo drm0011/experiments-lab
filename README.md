@@ -69,9 +69,7 @@ The experiments support the school learning outcomes through the HBO-i framework
 ## Next Experiment Candidates
 
 * Publishing container images to GHCR with proper versioning
-* Tests for the services, then selective test runs with fallback rules
 * Running the shop on Kubernetes (`kind` cluster + `kubectl apply -f k8s/`)
-* Dependency and image vulnerability scanning
 * Secrets handling and least-privilege CI configuration
 
 ## AI-Assisted Development

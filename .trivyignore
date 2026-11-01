@@ -1,0 +1,6 @@
+# npm ships undici 6.29.0 in its bundled dependency tree; fixed in 6.29.1.
+# App dependencies themselves are clean (npm audit: 0 vulnerabilities).
+# Re-check on every node/npm base image bump.
+CVE-2026-109383
+CVE-2026-109869
+CVE-2026-87018
