@@ -72,6 +72,14 @@ The experiments support the school learning outcomes through the HBO-i framework
 * Running the shop on Kubernetes (`kind` cluster + `kubectl apply -f k8s/`)
 * Secrets handling and least-privilege CI configuration
 
+## Scrum Board
+
+Work is tracked as GitHub Issues in user-story form (acceptance criteria + Definition of Done), with board labels as columns: `board::backlog`, `board::in-progress`, `board::done`.
+
+- **In VS Code:** GitHub extension → Issues panel (or filter by label `board::`)
+- **In browser:** https://github.com/drm0011/experiments-lab/issues
+- Future sessions are pre-planned as issues in the backlog
+
 ## AI-Assisted Development
 
 AI tools may be used, but AI output is a hypothesis until validated:
