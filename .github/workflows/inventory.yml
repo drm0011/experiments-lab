@@ -4,10 +4,12 @@ on:
   push:
     paths:
       - 'projects/microservices-playground/services/inventory/**'
+      - 'contracts/inventory-openapi.json'
       - '.github/workflows/inventory.yml'
   pull_request:
     paths:
       - 'projects/microservices-playground/services/inventory/**'
+      - 'contracts/inventory-openapi.json'
       - '.github/workflows/inventory.yml'
 
 jobs:

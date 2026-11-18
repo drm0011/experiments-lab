@@ -14,9 +14,13 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddHttpClient();
 
+builder.Services.AddOpenApi();
+
 var app = builder.Build();
 
 app.UseCors();
+
+app.MapOpenApi();
 
 var inventoryUrl = builder.Configuration["INVENTORY_URL"] ?? "http://localhost:8083";
 

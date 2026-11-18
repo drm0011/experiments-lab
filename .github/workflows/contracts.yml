@@ -1,0 +1,25 @@
+name: contracts
+
+on:
+  push:
+    paths:
+      - 'contracts/**'
+      - 'projects/microservices-playground/services/**'
+      - 'scripts/check-contracts.sh'
+      - '.github/workflows/contracts.yml'
+  pull_request:
+    paths:
+      - 'contracts/**'
+      - 'projects/microservices-playground/services/**'
+      - 'scripts/check-contracts.sh'
+      - '.github/workflows/contracts.yml'
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - run: bash scripts/check-contracts.sh

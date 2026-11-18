@@ -1,0 +1,4 @@
+== inventory: generating OpenAPI document ==
+OK: inventory matches committed contract
+== orders: generating OpenAPI document ==
+OK: orders matches committed contract

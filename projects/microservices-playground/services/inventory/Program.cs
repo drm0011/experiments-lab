@@ -4,9 +4,13 @@ builder.Services.AddCors(options =>
     options.AddDefaultPolicy(policy =>
         policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 
+builder.Services.AddOpenApi();
+
 var app = builder.Build();
 
 app.UseCors();
+
+app.MapOpenApi();
 
 var stock = new Dictionary<int, int>
 {

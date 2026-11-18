@@ -1,0 +1,8 @@
+== inventory: generating OpenAPI document ==
+ERROR: OpenAPI contract drift detected for inventory
+4c4
+<         "title": "DRIFTED CONTRACT",
+---
+>         "title": "Inventory.Api | v1",
+== orders: generating OpenAPI document ==
+OK: orders matches committed contract

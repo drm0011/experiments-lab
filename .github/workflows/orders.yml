@@ -4,10 +4,14 @@ on:
   push:
     paths:
       - 'projects/microservices-playground/services/orders/**'
+      - 'contracts/orders-openapi.json'
+      - 'contracts/inventory-openapi.json'
       - '.github/workflows/orders.yml'
   pull_request:
     paths:
       - 'projects/microservices-playground/services/orders/**'
+      - 'contracts/orders-openapi.json'
+      - 'contracts/inventory-openapi.json'
       - '.github/workflows/orders.yml'
 
 jobs:

@@ -39,6 +39,7 @@ My personal track (approximately 0.5 day per week) complements the group project
 
 * Three ASP.NET Core minimal APIs (.NET 10) plus one React frontend, each with its own Dockerfile
 * One real cross-service dependency: `orders` checks `inventory` stock over HTTP before accepting an order — `409` when out of stock, `503` when inventory is down
+* Committed OpenAPI contracts (`contracts/`) with a CI drift gate; contract changes trigger dependent pipelines
 * In-memory data only; deliberately no gateway, messaging, auth, or database yet — these gaps are future experiment subjects
 * Docker Compose runs everything locally; GitHub Actions has **one pipeline per service** (`.github/workflows/*.yml`) with path filters, each building code + container image
 * **Runs on Kubernetes**: local k3s cluster (k3d) with all four services deployed, health probes, and verified self-healing (`k8s/`, experiment 04)
