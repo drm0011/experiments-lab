@@ -54,6 +54,15 @@ For the group project's pipeline: an equivalent scan step (e.g., Trivy in GitLab
 - Informed decision making: accept-vs-fix-vs-ignore decision for residual CVEs, documented
 - HBO-i: evidence for the security competency
 
+## Follow-up (2026-11-18): the gate caught real CVEs
+
+While adding the OpenAPI contract feature (experiment 05), the Trivy gate failed the `inventory` and `orders` pipelines. Two separate real-world findings:
+
+1. **Newly published ASP.NET Core CVEs** (CVE-2026-114146/147/149) affecting runtime 10.0.14 in our digest-pinned base image — fixed by updating the pinned `aspnet:10.0` digest to the 10.0.15 image
+2. **Transitive Microsoft.OpenApi 2.0.0** (HIGH, fixed in 2.7.5) pulled in by the new contract package — fixed by adding a direct reference to 2.7.5
+
+Lesson: the gate works exactly as designed — vulnerabilities that appear *after* the initial hardening fail the pipeline until fixed. Digest pinning means the fix is a deliberate digest bump, not a silent tag drift. Evidence: pipeline logs for the failing runs, clean rescans committed below.
+
 ## Next Step
 
 Publish images to GHCR (scanned images are worth publishing), then deploy to a kind cluster.
