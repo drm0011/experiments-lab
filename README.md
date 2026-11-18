@@ -41,7 +41,7 @@ My personal track (approximately 0.5 day per week) complements the group project
 * One real cross-service dependency: `orders` checks `inventory` stock over HTTP before accepting an order — `409` when out of stock, `503` when inventory is down
 * In-memory data only; deliberately no gateway, messaging, auth, or database yet — these gaps are future experiment subjects
 * Docker Compose runs everything locally; GitHub Actions has **one pipeline per service** (`.github/workflows/*.yml`) with path filters, each building code + container image
-* Initial Kubernetes manifests in `k8s/` (groundwork — cluster and image publishing come later)
+* **Runs on Kubernetes**: local k3s cluster (k3d) with all four services deployed, health probes, and verified self-healing (`k8s/`, experiment 04)
 
 ## Learning Outcomes
 

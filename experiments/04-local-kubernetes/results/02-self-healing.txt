@@ -1,0 +1,13 @@
+# Self-healing demo - 2026-11-18T19:34:27+01:00
+
+$ kubectl delete pod inventory-c8d989445-qnrsk
+pod "inventory-c8d989445-qnrsk" deleted
+
+$ curl POST /orders immediately after deleting the inventory pod
+{"error":"inventory unavailable"} [503]
+
+$ kubectl get pods -w snapshot after 15s
+inventory-c8d989445-qh9xd   1/1     Running   0          87s
+
+$ curl POST /orders after inventory came back
+{"id":4,"itemId":2,"quantity":1} [200]

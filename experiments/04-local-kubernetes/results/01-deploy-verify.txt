@@ -1,0 +1,31 @@
+# Kubernetes verification - 2026-11-18T19:34:18+01:00
+
+$ kubectl get pods -o wide
+NAME                        READY   STATUS    RESTARTS   AGE   IP           NODE                      NOMINATED NODE   READINESS GATES
+catalog-6479d6cb6b-9dnl7    1/1     Running   0          26s   10.42.0.7    k3d-playground-server-0   <none>           <none>
+frontend-864fcb4b49-5l7rs   1/1     Running   0          26s   10.42.0.8    k3d-playground-server-0   <none>           <none>
+inventory-c8d989445-qnrsk   1/1     Running   0          26s   10.42.0.9    k3d-playground-server-0   <none>           <none>
+orders-fcd65cc4d-mkp7p      1/1     Running   0          26s   10.42.0.10   k3d-playground-server-0   <none>           <none>
+
+$ kubectl get services
+NAME         TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+catalog      NodePort    10.43.83.247    <none>        8080:30181/TCP   27s
+frontend     NodePort    10.43.151.212   <none>        5173:30173/TCP   27s
+inventory    NodePort    10.43.152.116   <none>        8080:30183/TCP   27s
+kubernetes   ClusterIP   10.43.0.1       <none>        443/TCP          65s
+orders       NodePort    10.43.129.179   <none>        8080:30182/TCP   27s
+
+$ curl http://localhost:8081/items (catalog via NodePort)
+[{"id":1,"name":"Widget","price":9.99},{"id":2,"name":"Gadget","price":19.99},{"id":3,"name":"Gizmo","price":4.49}] [200]
+
+$ curl http://localhost:8083/stock (inventory via NodePort)
+[{"itemId":1,"quantity":10},{"itemId":2,"quantity":5},{"itemId":3,"quantity":0}] [200]
+
+$ curl POST /orders item 1 x2 (orders -> inventory via cluster DNS)
+{"id":3,"itemId":1,"quantity":2} [200]
+
+$ curl POST /orders item 3 x1 (stock 0 -> 409)
+{"error":"insufficient stock"} [409]
+
+$ curl http://localhost:5173 (frontend)
+[200]
