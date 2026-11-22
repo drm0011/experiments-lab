@@ -35,10 +35,10 @@ jobs:
       - name: Deploy the shop
         run: |
           kubectl apply -f k8s/
-          kubectl wait --for=condition=Ready pods -l app=catalog --timeout=180s
-          kubectl wait --for=condition=Ready pods -l app=inventory --timeout=180s
-          kubectl wait --for=condition=Ready pods -l app=orders --timeout=180s
-          kubectl wait --for=condition=Ready pods -l app=frontend --timeout=180s
+          kubectl rollout status deploy/catalog --timeout=180s
+          kubectl rollout status deploy/inventory --timeout=180s
+          kubectl rollout status deploy/orders --timeout=180s
+          kubectl rollout status deploy/frontend --timeout=180s
 
       - name: Smoke test the failure modes
         run: |
@@ -60,7 +60,7 @@ jobs:
             echo
             echo "\$ scale inventory back to 1, POST again (expect 200 after transient pool refresh)"
             kubectl scale deploy/inventory --replicas=1
-            kubectl wait --for=condition=Ready pods -l app=inventory --timeout=120s
+            kubectl rollout status deploy/inventory --timeout=120s
             for attempt in $(seq 1 10); do
               code=$(curl -s -o /tmp/order-resp.json -w "%{http_code}" -X POST http://localhost:8082/orders -H "Content-Type: application/json" -d '{"itemId":2,"quantity":1}')
               echo "attempt $attempt: [${code}]"
