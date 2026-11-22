@@ -71,7 +71,8 @@ jobs:
             echo
             [ "$code" = "200" ] || { echo "FAIL: orders did not recover"; exit 1; }
             echo
-          } | tee smoke-results.txt
+          } > smoke-results.txt
+          cat smoke-results.txt
 
       - name: Upload smoke evidence
         uses: actions/upload-artifact@v4

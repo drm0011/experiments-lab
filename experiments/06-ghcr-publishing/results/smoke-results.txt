@@ -1,0 +1,11 @@
+# deploy-smoke - 2026-11-22T14:46:52+00:00
+
+$ POST /orders item 1 x2 (expect 200)
+{"id":3,"itemId":1,"quantity":2} [200]
+$ POST /orders item 3 x1 (stock 0, expect 409)
+{"error":"insufficient stock"} [409]
+$ scale inventory to 0, POST again (expect 503)
+deployment.apps/inventory scaled
+{"error":"inventory unavailable"} [503]
+$ scale inventory back to 1, POST again (expect 200 after transient pool refresh)
+deployment.apps/inventory scaled
