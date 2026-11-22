@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: orders
-          image: microservices-playground-orders:latest
+          image: ghcr.io/drm0011/playground-orders:latest
           imagePullPolicy: IfNotPresent
           env:
             - name: INVENTORY_URL

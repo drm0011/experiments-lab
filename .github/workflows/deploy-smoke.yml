@@ -1,0 +1,76 @@
+name: deploy-smoke
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'k8s/**'
+      - 'projects/microservices-playground/**'
+      - '.github/workflows/deploy-smoke.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install kubectl
+        run: |
+          curl -sLO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/
+
+      - name: Install k3d
+        run: |
+          curl -sL "https://github.com/k3d-io/k3d/releases/download/v5.9.0/k3d-linux-amd64" -o k3d
+          chmod +x k3d
+          sudo mv k3d /usr/local/bin/
+
+      - name: Create ephemeral cluster
+        run: k3d cluster create smoke --wait
+
+      - name: Deploy the shop
+        run: |
+          kubectl apply -f k8s/
+          kubectl wait --for=condition=Ready pods -l app=catalog --timeout=180s
+          kubectl wait --for=condition=Ready pods -l app=inventory --timeout=180s
+          kubectl wait --for=condition=Ready pods -l app=orders --timeout=180s
+          kubectl wait --for=condition=Ready pods -l app=frontend --timeout=180s
+
+      - name: Smoke test the failure modes
+        run: |
+          kubectl port-forward svc/orders 8082:8080 >/tmp/pf.log 2>&1 &
+          sleep 8
+          {
+            echo "# deploy-smoke - $(date -Iseconds)"
+            echo
+            echo "\$ POST /orders item 1 x2 (expect 200)"
+            curl -s -w " [%{http_code}]" -X POST http://localhost:8082/orders -H "Content-Type: application/json" -d '{"itemId":1,"quantity":2}'
+            echo
+            echo "\$ POST /orders item 3 x1 (stock 0, expect 409)"
+            curl -s -w " [%{http_code}]" -X POST http://localhost:8082/orders -H "Content-Type: application/json" -d '{"itemId":3,"quantity":1}'
+            echo
+            echo "\$ scale inventory to 0, POST again (expect 503)"
+            kubectl scale deploy/inventory --replicas=0
+            sleep 3
+            curl -s -w " [%{http_code}]" -X POST http://localhost:8082/orders -H "Content-Type: application/json" -d '{"itemId":1,"quantity":1}'
+            echo
+            echo "\$ scale inventory back to 1, POST again (expect 200)"
+            kubectl scale deploy/inventory --replicas=1
+            kubectl wait --for=condition=Ready pods -l app=inventory --timeout=120s
+            curl -s -w " [%{http_code}]" -X POST http://localhost:8082/orders -H "Content-Type: application/json" -d '{"itemId":2,"quantity":1}'
+            echo
+          } | tee smoke-results.txt
+
+      - name: Upload smoke evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-results
+          path: smoke-results.txt
+
+      - name: Tear down cluster
+        if: always()
+        run: k3d cluster delete smoke

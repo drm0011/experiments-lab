@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: catalog
-          image: microservices-playground-catalog:latest
+          image: ghcr.io/drm0011/playground-catalog:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080

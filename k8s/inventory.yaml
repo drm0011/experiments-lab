@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: inventory
-          image: microservices-playground-inventory:latest
+          image: ghcr.io/drm0011/playground-inventory:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080

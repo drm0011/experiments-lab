@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: microservices-playground-frontend:latest
+          image: ghcr.io/drm0011/playground-frontend:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5173

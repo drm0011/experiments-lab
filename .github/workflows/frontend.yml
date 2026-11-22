@@ -10,6 +10,10 @@ on:
       - 'projects/microservices-playground/frontend/**'
       - '.github/workflows/frontend.yml'
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -35,3 +39,15 @@ jobs:
           severity: HIGH,CRITICAL
           exit-code: 1
           trivyignores: .trivyignore
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish to GHCR
+        run: |
+          docker tag playground-frontend:ci ghcr.io/drm0011/playground-frontend:sha-${{ github.sha }}
+          docker tag playground-frontend:ci ghcr.io/drm0011/playground-frontend:latest
+          docker push ghcr.io/drm0011/playground-frontend:sha-${{ github.sha }}
+          docker push ghcr.io/drm0011/playground-frontend:latest
