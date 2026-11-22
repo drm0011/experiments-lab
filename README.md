@@ -41,8 +41,8 @@ My personal track (approximately 0.5 day per week) complements the group project
 * One real cross-service dependency: `orders` checks `inventory` stock over HTTP before accepting an order — `409` when out of stock, `503` when inventory is down
 * Committed OpenAPI contracts (`contracts/`) with a CI drift gate; contract changes trigger dependent pipelines
 * In-memory data only; deliberately no gateway, messaging, auth, or database yet — these gaps are future experiment subjects
-* Docker Compose runs everything locally; GitHub Actions has **one pipeline per service** (`.github/workflows/*.yml`) with path filters, each building code + container image
-* **Runs on Kubernetes**: local k3s cluster (k3d) with all four services deployed, health probes, and verified self-healing (`k8s/`, experiment 04)
+* Docker Compose runs everything locally; GitHub Actions has **one pipeline per service** (`.github/workflows/*.yml`) with path filters, each building code + container image, passing a Trivy gate, and **publishing to GHCR**
+* **Runs on Kubernetes**: local k3s cluster (k3d) pulling images from GHCR, health probes, verified self-healing; a `deploy-smoke` workflow validates deployment in an ephemeral cluster on every main push (`k8s/`, experiments 04 + 06)
 
 ## Learning Outcomes
 

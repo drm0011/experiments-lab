@@ -1,4 +1,4 @@
-# deploy-smoke - 2026-11-22T14:46:52+00:00
+# deploy-smoke - 2026-11-22T14:52:38+00:00
 
 $ POST /orders item 1 x2 (expect 200)
 {"id":3,"itemId":1,"quantity":2} [200]
@@ -9,3 +9,9 @@ deployment.apps/inventory scaled
 {"error":"inventory unavailable"} [503]
 $ scale inventory back to 1, POST again (expect 200 after transient pool refresh)
 deployment.apps/inventory scaled
+Waiting for deployment "inventory" rollout to finish: 0 out of 1 new replicas have been updated...
+Waiting for deployment "inventory" rollout to finish: 0 of 1 updated replicas are available...
+deployment "inventory" successfully rolled out
+attempt 1: [200]
+{"id":4,"itemId":2,"quantity":1}
+
