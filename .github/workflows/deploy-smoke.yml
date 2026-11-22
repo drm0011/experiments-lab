@@ -58,10 +58,18 @@ jobs:
             sleep 3
             curl -s -w " [%{http_code}]" -X POST http://localhost:8082/orders -H "Content-Type: application/json" -d '{"itemId":1,"quantity":1}'
             echo
-            echo "\$ scale inventory back to 1, POST again (expect 200)"
+            echo "\$ scale inventory back to 1, POST again (expect 200 after transient pool refresh)"
             kubectl scale deploy/inventory --replicas=1
             kubectl wait --for=condition=Ready pods -l app=inventory --timeout=120s
-            curl -s -w " [%{http_code}]" -X POST http://localhost:8082/orders -H "Content-Type: application/json" -d '{"itemId":2,"quantity":1}'
+            for attempt in $(seq 1 10); do
+              code=$(curl -s -o /tmp/order-resp.json -w "%{http_code}" -X POST http://localhost:8082/orders -H "Content-Type: application/json" -d '{"itemId":2,"quantity":1}')
+              echo "attempt $attempt: [${code}]"
+              [ "$code" = "200" ] && break
+              sleep 2
+            done
+            cat /tmp/order-resp.json
+            echo
+            [ "$code" = "200" ] || { echo "FAIL: orders did not recover"; exit 1; }
             echo
           } | tee smoke-results.txt
 
