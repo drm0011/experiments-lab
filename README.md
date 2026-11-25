@@ -1,94 +1,65 @@
 # Semester Learning Lab
 
-This repository contains my personal software experiments and learning activities for the semester — small, focused, evidence-based experiments, not one large application.
+Personal software experiments and learning activities for the semester — small, focused, evidence-based experiments.
 
 ## Semester Context
 
-My main project (approximately 4.5 days per week) is the semester-long group project:
+Group project (4.5 days/week): **Automated Impacted Test Case Selection and Execution in GitLab CI/CD** (Thermo Fisher Velox).
 
-> **Automated Impacted Test Case Selection and Execution in GitLab CI/CD**
+Individual track (1 weekday + 1 weekend day): **the X-Clone** — a Twitter-style system built as C#/.NET microservices, to explore enterprise software: distributed data, communication patterns via message brokers, security, and the CI/CD machinery that delivers it all.
 
-The project selects and runs only the tests affected by a merge request's changes, using coverage data to map source files to tests, with conservative fallbacks when the data is missing or stale.
+Two investigation tracks:
 
-My personal track (approximately 0.5 day per week) complements the group project. It explores what a group project at this scale rarely allows:
+1. **CI/CD for microservices — DevSecOps** *(complete, evidence archived)*: per-service pipelines, Trivy/gitleaks gates, OpenAPI contract drift gate, GHCR publishing, ephemeral-cluster deploy-smoke, local k3s with self-healing
+2. **Enterprise software — distributed data & communication patterns** *(active)*: the X-Clone
 
-* designing and operating CI/CD for a **microservices architecture**
-* DevOps and DevSecOps practice
-* discovering which technical direction fits me as a future career choice
+## Research Questions
 
-## Research Question
+### Track 1 — DevSecOps & delivery (complete)
 
-> **How is a CI/CD pipeline for a microservices application — covering DevSecOps practice — designed so that it is fast, reliable, and safe to trust?**
+> How can a CI/CD pipeline for a multi-service system enforce security and reliability automatically — so that unsafe artifacts are blocked, every change is deployment-validated, and failures are detected and recoverable?
 
-### Sub-questions
+Evidence: `experiments/03-deploy-and-secure` … `06-ghcr-publishing` (see below).
 
-* **SQ1 — Pipeline design:** How should CI/CD be structured for a multi-service system — per-service builds, service dependencies, container images, and delivery steps — so changes are validated quickly without coupling the services back together?
-* **SQ2 — Security:** Which security practices should a microservices CI/CD pipeline include — dependency and image scanning, secret handling, least-privilege configuration — and how do they integrate without blocking development?
-* **SQ3 — Trustworthiness (reliability):** How can the pipeline be trusted in practice — reproducible environments, caching, selective runs with safe fallbacks — and how do I measure that trust instead of assuming it?
+### Track 2 — Enterprise software (active)
 
-## The Microservices Project
+> How can distributed-data consistency problems in a multi-service system be solved with asynchronous communication patterns — so that no message is lost, no duplicate causes harm, and services converge to a consistent state?
 
-`projects/microservices-playground/` — a tiny shop that serves as the vehicle for the research question:
+- **SQ1 Patterns & boundaries:** When must a data change become an *event* — and what must the event carry?
+- **SQ2 Message reliability:** How do outbox + durable queues + idempotent consumers + dead-lettering guarantee at-least-once without harm?
+- **SQ3 Security in the data lifecycle:** What happens to data when an account is deleted — deletion events, erasure, least privilege?
+- **SQ4 Frontend operability:** How can a frontend make a distributed backend operable (event feed, failure states, DLQ inspection)?
 
-| Service   | Port | Endpoints                          |
-|-----------|------|------------------------------------|
-| catalog   | 8081 | `/health`, `/items`                |
-| inventory | 8083 | `/health`, `/stock`, `/stock/{id}` |
-| orders    | 8082 | `/health`, `/orders` (GET/POST)    |
-| frontend  | 5173 | React (Vite + TypeScript) SPA      |
+## The X-Clone (`projects/x-clone/`)
 
-* Three ASP.NET Core minimal APIs (.NET 10) plus one React frontend, each with its own Dockerfile
-* One real cross-service dependency: `orders` checks `inventory` stock over HTTP before accepting an order — `409` when out of stock, `503` when inventory is down
-* Committed OpenAPI contracts (`contracts/`) with a CI drift gate; contract changes trigger dependent pipelines
-* In-memory data only; deliberately no gateway, messaging, auth, or database yet — these gaps are future experiment subjects
-* Docker Compose runs everything locally; GitHub Actions has **one pipeline per service** (`.github/workflows/*.yml`) with path filters, each building code + container image, passing a Trivy gate, and **publishing to GHCR**
-* **Runs on Kubernetes**: local k3s cluster (k3d) pulling images from GHCR, health probes, verified self-healing; a `deploy-smoke` workflow validates deployment in an ephemeral cluster on every main push (`k8s/`, experiments 04 + 06)
+Single-purpose services, RabbitMQ between them, PostgreSQL per service:
 
-## Learning Outcomes
+| Service | Port | Responsibility |
+|---|---|---|
+| identity | 8091 | accounts, JWT auth → events: UserCreated, UserDeleted |
+| post | 8092 | tweets create/delete → events: PostCreated, PostDeleted |
+| follow | 8093 | social graph → events: FollowCreated, FollowDeleted |
+| timeline | 8094 | materialized timelines ← consumes Post/Follow events |
+| frontend | 5174 | X-style UI (React + Vite + TS) |
+| rabbitmq | 5672/15672 | message broker (management UI) |
+| postgres | 5433 | one database per service (dev: single instance, 4 databases) |
 
-The experiments support the school learning outcomes through the HBO-i framework:
+Enterprise patterns in scope: fan-out on write · outbox · idempotent consumers · dead-letter queues · event-carried state · eventual consistency · API gateway (later) · JWT auth.
 
-* **Engineering approach:** every experiment follows Question → Hypothesis → Experiment → Measurement → Analysis → Conclusion, producing measurable evidence
-* **System thinking:** investigating how pipeline configuration, runner execution, service dependencies, and security controls interact
-* **Informed decision making:** design trade-offs (speed vs safety, isolation vs convenience) justified with evidence
-* **Software quality:** maintainability, reliability, security, and reproducibility treated as first-class concerns
-* **Professional standard:** applied research with documented limitations and appropriate uncertainty
-* **Personal leadership:** using experiments to discover which professional direction fits me
+NFRs (targets): post write p95 < 500ms · timeline read p95 < 300ms · fan-out ≥ 100 posts/s · Trivy HIGH/CRITICAL = fail · deletion purge everywhere ≤ 60s · timeline readable when a service is down · OpenAPI contracts + drift gate per service.
+
+## Archived: the Tiny Shop (LO3 evidence)
+
+`projects/microservices-playground/` + experiments 03–06 remain as the completed CI/CD/DevSecOps track (per-service pipelines, security gates, GHCR, deploy-smoke, k3s self-healing). The shop's k8s manifests live in `projects/microservices-playground/k8s/`. Read the shop README for how to run it.
 
 ## Experiment Conventions
 
-* Each experiment lives in `experiments/NN-name/` with `README.md`, `src/`, `results/`, `notes/`
-* Experiments are small and finishable within 1–2 sprints
-* Results are captured as evidence (terminal output, artifacts, logs, timings), not assertions
-* Every experiment ends with a conclusion and a next-step decision
-
-## Current Experiments
-
-* **01 — Linux Developer Toolbox** *(completed sprint 1, parked)*: a Bash CLI for project inspection
-* **02 — CI Runner Under the Hood** *(in progress)*: what the GitHub Actions runner actually is — environment dump, job parallelism, first findings captured
-
-## Next Experiment Candidates
-
-* Publishing container images to GHCR with proper versioning
-* Running the shop on Kubernetes (`kind` cluster + `kubectl apply -f k8s/`)
-* Secrets handling and least-privilege CI configuration
+Each experiment lives in `experiments/NN-name/` with `README.md`, `src/`, `results/`, `notes/` — small, finishable in 1–2 sessions, results captured as evidence, ending with a conclusion and next-step decision.
 
 ## Scrum Board
 
-Work is tracked as GitHub Issues in user-story form (acceptance criteria + Definition of Done), with board labels as columns: `board::backlog`, `board::in-progress`, `board::done`.
-
-- **In VS Code:** GitHub extension → Issues panel (or filter by label `board::`)
-- **In browser:** https://github.com/drm0011/experiments-lab/issues
-- Future sessions are pre-planned as issues in the backlog
+Work is tracked as GitHub Issues in user-story form (acceptance criteria + Definition of Done), with board labels `board::backlog`, `board::in-progress`, `board::done` — https://github.com/users/drm0011/projects/1
 
 ## AI-Assisted Development
 
-AI tools may be used, but AI output is a hypothesis until validated:
-
-```text
-AI suggestion → my implementation → test/experiment → evidence → accept/modify/reject
-```
-
-## Reflection
-
-At regular intervals I ask: what did I learn? what surprised me? which area did I enjoy most? which direction do I want to investigate next? The answers steer both the experiments and my career choice.
+AI output is a hypothesis until validated: suggestion → implementation → test/experiment → evidence → accept/modify/reject.

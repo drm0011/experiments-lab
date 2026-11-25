@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/services/" />
+  <Folder Name="/services/follow/">
+    <Project Path="services/follow/Follow.Service.csproj" />
+  </Folder>
+  <Folder Name="/services/identity/">
+    <Project Path="services/identity/Identity.Service.csproj" />
+  </Folder>
+  <Folder Name="/services/post/">
+    <Project Path="services/post/Post.Service.csproj" />
+  </Folder>
+  <Folder Name="/services/timeline/">
+    <Project Path="services/timeline/Timeline.Service.csproj" />
+  </Folder>
+</Solution>

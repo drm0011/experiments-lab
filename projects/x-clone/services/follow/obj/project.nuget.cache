@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "BLtQqccKNCQ=",
+  "success": true,
+  "projectFilePath": "/home/capn/experiments-lab/projects/x-clone/services/follow/Follow.Service.csproj",
+  "expectedPackageFiles": [
+    "/home/capn/.nuget/packages/microsoft.aspnetcore.openapi/10.0.0/microsoft.aspnetcore.openapi.10.0.0.nupkg.sha512",
+    "/home/capn/.nuget/packages/microsoft.openapi/2.7.5/microsoft.openapi.2.7.5.nupkg.sha512"
+  ],
+  "logs": []
+}

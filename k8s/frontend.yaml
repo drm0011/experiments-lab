@@ -14,20 +14,20 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: ghcr.io/drm0011/playground-frontend:latest
+          image: ghcr.io/drm0011/xclone-frontend:latest
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 5173
+            - containerPort: 5174
           readinessProbe:
             httpGet:
               path: /
-              port: 5173
+              port: 5174
             initialDelaySeconds: 2
             periodSeconds: 5
           livenessProbe:
             httpGet:
               path: /
-              port: 5173
+              port: 5174
             initialDelaySeconds: 5
             periodSeconds: 10
 ---
@@ -40,6 +40,6 @@ spec:
   selector:
     app: frontend
   ports:
-    - port: 5173
-      targetPort: 5173
-      nodePort: 30173
+    - port: 5174
+      targetPort: 5174
+      nodePort: 30174

@@ -1,0 +1,82 @@
+services:
+  rabbitmq:
+    image: rabbitmq:4-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: xclone
+      POSTGRES_PASSWORD: xclone-dev
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U xclone"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  identity:
+    build:
+      context: .
+      dockerfile: services/identity/Dockerfile
+    ports:
+      - "8091:8080"
+    depends_on:
+      rabbitmq: { condition: service_healthy }
+      postgres: { condition: service_healthy }
+
+  post:
+    build:
+      context: .
+      dockerfile: services/post/Dockerfile
+    ports:
+      - "8092:8080"
+    depends_on:
+      rabbitmq: { condition: service_healthy }
+      postgres: { condition: service_healthy }
+
+  follow:
+    build:
+      context: .
+      dockerfile: services/follow/Dockerfile
+    ports:
+      - "8093:8080"
+    depends_on:
+      rabbitmq: { condition: service_healthy }
+      postgres: { condition: service_healthy }
+
+  timeline:
+    build:
+      context: .
+      dockerfile: services/timeline/Dockerfile
+    ports:
+      - "8094:8080"
+    depends_on:
+      rabbitmq: { condition: service_healthy }
+      postgres: { condition: service_healthy }
+
+  frontend:
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5174:5174"
+    depends_on:
+      - identity
+      - post
+      - follow
+      - timeline
+
+volumes:
+  pgdata:

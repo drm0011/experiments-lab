@@ -3,11 +3,11 @@ name: frontend
 on:
   push:
     paths:
-      - 'projects/microservices-playground/frontend/**'
+      - 'projects/x-clone/frontend/**'
       - '.github/workflows/frontend.yml'
   pull_request:
     paths:
-      - 'projects/microservices-playground/frontend/**'
+      - 'projects/x-clone/frontend/**'
       - '.github/workflows/frontend.yml'
 
 permissions:
@@ -23,19 +23,19 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: projects/microservices-playground/frontend/package-lock.json
+          cache-dependency-path: projects/x-clone/frontend/package-lock.json
       - run: npm install
-        working-directory: projects/microservices-playground/frontend
+        working-directory: projects/x-clone/frontend
       - run: npm run build
-        working-directory: projects/microservices-playground/frontend
+        working-directory: projects/x-clone/frontend
       - name: Build container image
-        working-directory: projects/microservices-playground/frontend
-        run: docker build -t playground-frontend:ci .
+        working-directory: projects/x-clone/frontend
+        run: docker build -t xclone-frontend:ci .
       - name: Scan image with Trivy
         uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: image
-          image-ref: playground-frontend:ci
+          image-ref: xclone-frontend:ci
           severity: HIGH,CRITICAL
           exit-code: 1
           trivyignores: .trivyignore
@@ -47,7 +47,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Publish to GHCR
         run: |
-          docker tag playground-frontend:ci ghcr.io/drm0011/playground-frontend:sha-${{ github.sha }}
-          docker tag playground-frontend:ci ghcr.io/drm0011/playground-frontend:latest
-          docker push ghcr.io/drm0011/playground-frontend:sha-${{ github.sha }}
-          docker push ghcr.io/drm0011/playground-frontend:latest
+          docker tag xclone-frontend:ci ghcr.io/drm0011/xclone-frontend:sha-${{ github.sha }}
+          docker tag xclone-frontend:ci ghcr.io/drm0011/xclone-frontend:latest
+          docker push ghcr.io/drm0011/xclone-frontend:sha-${{ github.sha }}
+          docker push ghcr.io/drm0011/xclone-frontend:latest

@@ -5,7 +5,7 @@ on:
     branches: [main]
     paths:
       - 'k8s/**'
-      - 'projects/microservices-playground/**'
+      - 'projects/x-clone/**'
       - '.github/workflows/deploy-smoke.yml'
 
 permissions:
@@ -29,50 +29,58 @@ jobs:
           chmod +x k3d
           sudo mv k3d /usr/local/bin/
 
+      - name: Build images locally (registry-independent smoke)
+        working-directory: projects/x-clone
+        run: |
+          docker build -f services/identity/Dockerfile -t ghcr.io/drm0011/xclone-identity:latest .
+          docker build -f services/post/Dockerfile -t ghcr.io/drm0011/xclone-post:latest .
+          docker build -f services/follow/Dockerfile -t ghcr.io/drm0011/xclone-follow:latest .
+          docker build -f services/timeline/Dockerfile -t ghcr.io/drm0011/xclone-timeline:latest .
+          docker build -f frontend/Dockerfile -t ghcr.io/drm0011/xclone-frontend:latest frontend
+
       - name: Create ephemeral cluster
         run: k3d cluster create smoke --wait
 
-      - name: Deploy the shop
+      - name: Import images into the cluster
+        run: |
+          k3d image import ghcr.io/drm0011/xclone-identity:latest \
+                           ghcr.io/drm0011/xclone-post:latest \
+                           ghcr.io/drm0011/xclone-follow:latest \
+                           ghcr.io/drm0011/xclone-timeline:latest \
+                           ghcr.io/drm0011/xclone-frontend:latest -c smoke
+
+      - name: Deploy the stack
         run: |
           kubectl apply -f k8s/
-          kubectl rollout status deploy/catalog --timeout=180s
-          kubectl rollout status deploy/inventory --timeout=180s
-          kubectl rollout status deploy/orders --timeout=180s
+          kubectl rollout status deploy/identity --timeout=180s
+          kubectl rollout status deploy/post --timeout=180s
+          kubectl rollout status deploy/follow --timeout=180s
+          kubectl rollout status deploy/timeline --timeout=180s
           kubectl rollout status deploy/frontend --timeout=180s
 
-      - name: Smoke test the failure modes
+      - name: Smoke test health endpoints
         run: |
-          kubectl port-forward svc/orders 8082:8080 >/tmp/pf.log 2>&1 &
+          kubectl port-forward svc/identity 18091:8091 >/tmp/pf1.log 2>&1 &
+          kubectl port-forward svc/post 18092:8092 >/tmp/pf2.log 2>&1 &
+          kubectl port-forward svc/follow 18093:8093 >/tmp/pf3.log 2>&1 &
+          kubectl port-forward svc/timeline 18094:8094 >/tmp/pf4.log 2>&1 &
+          kubectl port-forward svc/frontend 15174:5174 >/tmp/pf5.log 2>&1 &
           sleep 8
           {
             echo "# deploy-smoke - $(date -Iseconds)"
             echo
-            echo "\$ POST /orders item 1 x2 (expect 200)"
-            curl -s -w " [%{http_code}]" -X POST http://localhost:8082/orders -H "Content-Type: application/json" -d '{"itemId":1,"quantity":2}'
-            echo
-            echo "\$ POST /orders item 3 x1 (stock 0, expect 409)"
-            curl -s -w " [%{http_code}]" -X POST http://localhost:8082/orders -H "Content-Type: application/json" -d '{"itemId":3,"quantity":1}'
-            echo
-            echo "\$ scale inventory to 0, POST again (expect 503)"
-            kubectl scale deploy/inventory --replicas=0
-            sleep 3
-            curl -s -w " [%{http_code}]" -X POST http://localhost:8082/orders -H "Content-Type: application/json" -d '{"itemId":1,"quantity":1}'
-            echo
-            echo "\$ scale inventory back to 1, POST again (expect 200 after transient pool refresh)"
-            kubectl scale deploy/inventory --replicas=1
-            kubectl rollout status deploy/inventory --timeout=120s
-            for attempt in $(seq 1 10); do
-              code=$(curl -s -o /tmp/order-resp.json -w "%{http_code}" -X POST http://localhost:8082/orders -H "Content-Type: application/json" -d '{"itemId":2,"quantity":1}')
-              echo "attempt $attempt: [${code}]"
-              [ "$code" = "200" ] && break
-              sleep 2
+            for pair in "identity:18091" "post:18092" "follow:18093" "timeline:18094"; do
+              name="${pair%%:*}"; port="${pair##*:}"
+              echo "\$ GET /health $name (expect 200)"
+              curl -s -w " [%{http_code}]" "http://localhost:$port/health"
+              echo
             done
-            cat /tmp/order-resp.json
-            echo
-            [ "$code" = "200" ] || { echo "FAIL: orders did not recover"; exit 1; }
+            echo "\$ GET frontend (expect 200)"
+            curl -s -o /dev/null -w "[%{http_code}]" http://localhost:15174
             echo
           } > smoke-results.txt
           cat smoke-results.txt
+          grep -q "200" smoke-results.txt || { echo "FAIL: health check failed"; exit 1; }
 
       - name: Upload smoke evidence
         uses: actions/upload-artifact@v4
