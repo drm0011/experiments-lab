@@ -12,4 +12,7 @@
   <Folder Name="/services/timeline/">
     <Project Path="services/timeline/Timeline.Service.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Identity.Service.Tests/Identity.Service.Tests.csproj" />
+  </Folder>
 </Solution>

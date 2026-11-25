@@ -4,10 +4,12 @@ on:
   push:
     paths:
       - 'projects/x-clone/services/identity/**'
+      - 'projects/x-clone/tests/Identity.Service.Tests/**'
       - '.github/workflows/identity.yml'
   pull_request:
     paths:
       - 'projects/x-clone/services/identity/**'
+      - 'projects/x-clone/tests/Identity.Service.Tests/**'
       - '.github/workflows/identity.yml'
 
 permissions:
@@ -17,12 +19,30 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: xclone
+          POSTGRES_PASSWORD: xclone-dev
+          POSTGRES_DB: identity_test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U xclone"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
       - run: dotnet build projects/x-clone/services/identity/Identity.Service.csproj
+      - name: Run tests
+        env:
+          TEST_DB_CONNECTION: "Host=localhost;Port=5432;Database=identity_test_db;Username=xclone;Password=xclone-dev"
+        run: dotnet test projects/x-clone/tests/Identity.Service.Tests/Identity.Service.Tests.csproj
       - name: Build container image
         working-directory: projects/x-clone
         run: docker build -f services/identity/Dockerfile -t xclone-identity:ci .

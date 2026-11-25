@@ -97,3 +97,5 @@ app.MapPost("/register", async (RegisterRequest request, RegistrationService reg
 });
 
 app.Run();
+
+public partial class Program { }
