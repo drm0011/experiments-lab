@@ -16,6 +16,12 @@ spec:
         - name: identity
           image: ghcr.io/drm0011/xclone-identity:latest
           imagePullPolicy: IfNotPresent
+          env:
+            - name: ConnectionStrings__IdentityDb
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: IDENTITY_CONNECTION_STRING
           ports:
             - containerPort: 8080
           readinessProbe:

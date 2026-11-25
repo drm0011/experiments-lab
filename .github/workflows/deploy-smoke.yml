@@ -51,6 +51,9 @@ jobs:
 
       - name: Deploy the stack
         run: |
+          kubectl create secret generic postgres-secret \
+            --from-literal=DB_PASSWORD="${{ secrets.XCLONE_DB_PASSWORD }}" \
+            --from-literal=IDENTITY_CONNECTION_STRING="${{ secrets.XCLONE_IDENTITY_CONNECTION_STRING }}"
           kubectl apply -f k8s/
           kubectl rollout status deploy/identity --timeout=180s
           kubectl rollout status deploy/post --timeout=180s

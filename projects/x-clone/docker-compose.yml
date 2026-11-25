@@ -30,6 +30,8 @@ services:
     build:
       context: .
       dockerfile: services/identity/Dockerfile
+    environment:
+      ConnectionStrings__IdentityDb: "Host=postgres;Port=5432;Database=identity_db;Username=xclone;Password=xclone-dev"
     ports:
       - "8091:8080"
     depends_on:

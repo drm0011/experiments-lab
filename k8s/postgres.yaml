@@ -19,16 +19,35 @@ spec:
             - name: POSTGRES_USER
               value: xclone
             - name: POSTGRES_PASSWORD
-              value: xclone-dev
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: DB_PASSWORD
           ports:
             - containerPort: 5432
           volumeMounts:
             - name: pgdata
               mountPath: /var/lib/postgresql/data
+            - name: init
+              mountPath: /docker-entrypoint-initdb.d
       volumes:
         - name: pgdata
           persistentVolumeClaim:
             claimName: pgdata
+        - name: init
+          configMap:
+            name: postgres-init
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init
+data:
+  init.sql: |
+    CREATE DATABASE identity_db;
+    CREATE DATABASE posts_db;
+    CREATE DATABASE follows_db;
+    CREATE DATABASE timelines_db;
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
